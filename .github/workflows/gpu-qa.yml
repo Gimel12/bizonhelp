@@ -1,0 +1,20 @@
+name: GPU QA software checks
+on:
+  push:
+    paths: ['gpu-qa/**', 'bashrc', '.github/workflows/gpu-qa.yml']
+  pull_request:
+    paths: ['gpu-qa/**', 'bashrc', '.github/workflows/gpu-qa.yml']
+permissions:
+  contents: read
+jobs:
+  software:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: python -m pip install -r gpu-qa/requirements-test.txt
+      - run: python -m unittest discover -s gpu-qa/tests -v
+      - run: python -m compileall -q gpu-qa/gpuqa
+      - run: bash -n gpu-qa/install.sh gpu-qa/bizonhelp-gpu-qa.bash bashrc

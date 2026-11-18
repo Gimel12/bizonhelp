@@ -51,7 +51,8 @@ alias bizonhelp='
 echo Bizonhelp_4.1
 echo -e "\033[0;34m---------------Troubleshooting-commands--------------\033[0m"
 echo -e cpu-test ----------"\033[31;1mStress test for your CPU\033[0m"
-echo -e gpu-test ----------"\033[31;1mWill run luxmark benchmark to test your GPUs\033[0m"
+echo -e gpu-test ----------"\033[31;1mRun the existing 1-hour GPU Burn tensor stress test\033[0m"
+echo -e gpu-qa ------------"GPU workload QA for 1-8 cards: validate, quick, production --pilot, rma --pilot, status, report, export-rma"
 echo -e nvme-test ---------"\033[31;1mCheck NVMe performance and health\033[0m"
 echo -e Nvlink ------------"\033[31;1mCheck the status of NVLinks\033[0m"
 echo -e Nvidia-full -------"\033[31;1mFull GPU info list\033[0m"

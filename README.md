@@ -4,6 +4,12 @@ A curated `.bashrc` configuration that provides command-line tools, aliases, and
 
 ---
 
+## GPU QA release candidate
+
+`gpu-qa` adds AI inference/training, VRAM and bandwidth checks, and 1–8 GPU orchestration with HTML/PDF evidence reports. The candidate is software-tested; physical GPU qualification is pending and production approval is blocked by default.
+
+See [installation and team commands](gpu-qa/README.md) and the [hardware qualification checklist](gpu-qa/VALIDATION.md). The GPU QA installer preserves existing shell settings.
+
 ## Installation
 
 Copy the `bashrc` file to your home directory:
@@ -37,7 +43,8 @@ Type `bizonhelp` in the terminal to see the full list. Here's a summary:
 | Command | Description |
 |---------|-------------|
 | `gpu-info` | Show GPU index, PCI bus, serial, and UUID |
-| `gpu-test` | Run GPU stress test with gpu_burn |
+| `gpu-test` | Run the existing GPU Burn stress test |
+| `gpu-qa` | Candidate AI workload QA, multi-GPU checks and reports; see its installation guide |
 | `cpu-test` | Launch s-tui CPU stress test |
 | `nvme-test` | Run fio NVMe stress test |
 | `nvme-stress` | NVMe stress test suite |

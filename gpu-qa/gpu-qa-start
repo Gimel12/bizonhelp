@@ -1,0 +1,51 @@
+#!/usr/bin/python3
+"""Root-owned installed helper. No shell commands or operator-supplied paths."""
+import grp, json, os, pathlib, pwd, re, subprocess, sys
+
+if os.geteuid() != 0:
+    raise SystemExit("Run through sudo")
+if len(sys.argv) != 6:
+    raise SystemExit("Invalid arguments")
+run, profile, selectors, pilot, seconds = sys.argv[1:]
+if not re.fullmatch(r"[0-9]{8}T[0-9]{6}Z-[a-f0-9]{8}", run):
+    raise SystemExit("Invalid run")
+if profile not in ("quick", "production", "rma", "validate") or pilot not in ("0", "1"):
+    raise SystemExit("Invalid profile")
+ids = selectors.split(",")
+if (
+    not 1 <= len(ids) <= 8
+    or len(set(ids)) != len(ids)
+    or any(not re.fullmatch(r"GPU-[a-fA-F0-9-]{16,64}", u) for u in ids)
+):
+    raise SystemExit("Invalid GPU UUIDs")
+if not seconds.isdigit() or not 1 <= int(seconds) <= 60:
+    raise SystemExit("Invalid validation duration")
+root = pathlib.Path("/var/lib/bizon-gpu-qa/runs")
+path = root / run
+path.mkdir(mode=0o700, exist_ok=False)
+account = pwd.getpwnam("bizon-gpu-qa")
+gid = grp.getgrnam("bizon-gpu-qa").gr_gid
+request = path / "request.json"
+request.write_text(
+    json.dumps(
+        {
+            "profile": profile,
+            "gpus": selectors,
+            "pilot": pilot == "1" or profile == "validate",
+            "stage_seconds": int(seconds),
+        }
+    )
+)
+os.chown(request, account.pw_uid, gid)
+request.chmod(0o640)
+os.chown(path, account.pw_uid, gid)
+path.chmod(0o2770)
+try:
+    subprocess.run(
+        ["systemctl", "start", "bizon-gpu-qa@" + run + ".service"], check=True
+    )
+except subprocess.CalledProcessError:
+    (path / "start-error.txt").write_text(
+        "Service could not start. Inspect systemctl status for this run."
+    )
+    raise

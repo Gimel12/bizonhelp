@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+QA_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+export PYTHONPATH="$QA_DIR${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m gpuqa.cli "$@"

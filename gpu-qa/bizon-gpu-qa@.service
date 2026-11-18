@@ -1,0 +1,25 @@
+[Unit]
+Description=BIZON GPU QA run %i
+After=systemd-journald.service
+
+[Service]
+Type=simple
+User=bizon-gpu-qa
+Group=bizon-gpu-qa
+SupplementaryGroups=video render systemd-journal
+WorkingDirectory=/opt/bizon-gpu-qa
+Environment=PYTHONPATH=/opt/bizon-gpu-qa
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=HOME=/var/lib/bizon-gpu-qa/cache
+Environment=CUDA_CACHE_PATH=/var/lib/bizon-gpu-qa/cache/cuda
+ExecStart=/opt/bizon-gpu-qa/control/bin/python -m gpuqa.cli _run %i
+Restart=no
+KillMode=control-group
+TimeoutStopSec=20
+RuntimeMaxSec=40h
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/bizon-gpu-qa
+UMask=0007
